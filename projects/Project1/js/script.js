@@ -6,7 +6,7 @@ let timerInterval;
 
 class Meteor {
   constructor() {
-    //vars needed for meteors to work
+    //vars needed for meteors to wo
     this.x = 0;
     this.y = 0;
     this.img = 0;
