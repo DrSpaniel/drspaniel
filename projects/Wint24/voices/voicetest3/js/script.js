@@ -8,13 +8,8 @@
 
 "use strict";
 
-const speechSyn = new p5.Speech();
-
-/**
- * Description of preload
- */
-function preload() {}
-
+const speechrecog = new p5.SpeechRec();
+let currentspeech = "?";
 let bg;
 
 /**
@@ -23,11 +18,9 @@ let bg;
 function setup() {
   createCanvas(windowWidth, windowHeight); //autosize
   bg = loadImage("assets/images/bg.jpg");
-  console.log(speechSyn.listVoices());
-  speechSyn.setPitch(1);
-  speechSyn.setRate(1);
-  speechSyn.setVoice('Google polski');
-  
+
+  speechrecog.onResult = handleSpeech;
+  speechrecog.start();
 }
 
 /**
@@ -35,6 +28,11 @@ function setup() {
  */
 function draw() {
   background(bg);
+
+  textAlign(CENTER, CENTER);
+  textSize(24);
+
+  text(currentspeech, width/2, height/2);
 }
 
 function windowResized() {
@@ -42,8 +40,14 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+function handleSpeech() {
+  console.log(speechrecog.resultString);
+  //currentspeech = speechrecog.resultString;
 
-function mousePressed() {
-  //say stuff
-  speechSyn.speak("Hello, world! i am a human talking robot. i am sentient.");
+  if (speechrecog.resultString.toLowerCase() === 'how are you'){
+    currentspeech = "i'm doing great!";
+  }
+  else {
+    currentspeech = "test"
+  }
 }
