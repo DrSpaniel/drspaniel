@@ -6,7 +6,7 @@
 
 let model;
 let targetLabel = "C";
-//let trainingData = [];
+let trainingData = [];
 
 let state = "collection"; //begins by collecting data, might have to be changed
 let env;
