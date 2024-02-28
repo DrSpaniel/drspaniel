@@ -1,8 +1,8 @@
 /**
-using line 50,
+using line 55,
 you can create data, and train it.
 
-comment out line 50 to define data, then save using s
+comment out line 55 to define data, then save using s
 then import the JSON file and uncomment line 50 with the 
 directory of the file.
  */
@@ -59,7 +59,7 @@ function dataReady(){
   brain.normalizeData();
   brain.train(
     {
-      epochs: 50
+      epochs: 100
     }, finished
   );
 }
