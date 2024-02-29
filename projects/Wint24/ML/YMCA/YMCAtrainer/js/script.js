@@ -46,13 +46,13 @@ function setup() {
 
   let options = {
     inputs: 34,
-    outputs: 4,
+    outputs: 3,
     task: "classification",
     debug: true,
   };
 
   brain = ml5.neuralNetwork(options);
-  brain.loadData('ymca.json', dataReady);
+  //brain.loadData('controls.json', dataReady);
 }
 
 function dataReady(){
