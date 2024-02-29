@@ -31,6 +31,14 @@ the above 2 todos would be better made in a separate sketch, and then merge late
 
 
 
+
+  NOT WORKING:
+  ship not showing on website.
+  make steer gradual, depending on angle of arms
+  https://www.youtube.com/watch?v=fFzvwdkzr_c&t=0s
+  idek man this is a mess
+
+
  */
 "use strict";
 
