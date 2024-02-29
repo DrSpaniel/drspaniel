@@ -361,7 +361,7 @@ function classifyPose() {
 }
 
 function modelLoaded() {
-  //useful
+  //handles pose model, to detect posed
   console.log("poseNet ready!");
 }
 
