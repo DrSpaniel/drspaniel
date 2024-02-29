@@ -63,7 +63,7 @@ class Ship {
   constructor() {
     this.x = width / 2; // Initial x position at the center of the canvas
     this.y = height - 50; // Initial y position near the bottom of the canvas
-    this.img = loadImage("../assets/images/cursor-worm_kij6gi.png"); // Load ship image
+    this.img = loadImage("/assets/images/ship.png"); // Load ship image
     this.speed = 5; // Set ship speed
   }
 
