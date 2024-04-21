@@ -46,13 +46,13 @@ function setup() {
 
   let options = {
     inputs: 34,
-    outputs: 3,
+    outputs: 4, //(l)eft, (r)ight, r(e)st, s(a)lute
     task: "classification",
     debug: true,
   };
 
   brain = ml5.neuralNetwork(options);
-  //brain.loadData('controls.json', dataReady);   //comment this to collect data. uncomment AND load the model files to train it. 
+  brain.loadData('controls.json', dataReady);   //comment this to collect data. uncomment AND load the model files to train it. 
 }
 
 function dataReady(){

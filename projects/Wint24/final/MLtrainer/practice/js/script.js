@@ -1,10 +1,10 @@
 /**
-using line 55,
-you can create data, and train it.
-
-comment out line 55 to define data, then save using s
-then import the JSON file and uncomment line 50 with the 
-directory of the file.
+ * Daniel Gonzalez
+ *
+ * poseML:
+ * using ml5's pose function, the user will do certain poses
+ * to control a spaceship in the screen. first ill play with pose thing to see what can be done.
+ *
  */
 "use strict";
 
@@ -14,6 +14,7 @@ let pose;
 let skeleton;
 
 let brain;
+let poseLabel = "?";
 
 let state = "waiting";
 let targetLabel;
@@ -45,46 +46,62 @@ function setup() {
   poseNet.on("pose", gotPoses);
 
   let options = {
-    inputs: 34,
-    outputs: 3,
+    inputs: 34,   //i wonder if this can be reduced........
+    outputs: 4,   //once adding the new ML, there will be 4 outputs so change this plz
     task: "classification",
     debug: true,
   };
 
   brain = ml5.neuralNetwork(options);
-  //brain.loadData('controls.json', dataReady);   //comment this to collect data. uncomment AND load the model files to train it. 
+
+  const modelInfo = {
+    model: "model/model.json",
+    metadata: "model/model_meta.json",
+    weights: "model/model.weights.bin",
+  };
+  brain.load(modelInfo, brainLoaded);
 }
 
-function dataReady(){
-  brain.normalizeData();
-  brain.train(
-    {
-      epochs: 100
-    }, finished
-  );
+function brainLoaded() {
+  console.log("pose classification ready!!!!");
+  classifyPose();
 }
 
-function finished(){
-  console.log('model trained!!');
-  brain.save();   //saves meta, model, and weights to download to then practice in the model file
+function classifyPose() {
+  if (pose) {
+    let inputs = [];
+    for (let i = 0; i < pose.keypoints.length; i++) {
+      let x = pose.keypoints[i].position.x;
+      let y = pose.keypoints[i].position.y;
+      inputs.push(x);
+      inputs.push(y);
+    }
+    brain.classify(inputs, gotResult); //inputs is the 32 inputs!
+  } else {
+    setTimeout(classifyPose, 100);
+  }
 }
+
+function gotResult(error, results) {
+  if (results[0].confidence > 0.75) {
+    poseLabel = results[0].label.toUpperCase();   //you dont even need to type the letter out. the model already has the classifications of each.
+  }
+  console.log(results[0].confidence);   
+  classifyPose();
+}
+
+
+
+
 
 function draw() {
+  push();
   translate(video.width, 0); //this and line below simply flips the video
   scale(-1, 1);
   image(video, 0, 0, video.width, video.height);
 
   if (pose) {
-    //when pose gets activated, do stuff. maybe up confidence?
-
-    //below commented code was to size clown nose. no longer needed
-    // let eyeR = pose.rightEye;
-    // let eyeL = pose.leftEye;
-    // let d = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
-
-    // fill(255, 0, 0);
-    // ellipse(pose.nose.x, pose.nose.y, d);
-
+  
     for (let i = 0; i < skeleton.length; i++) {
       let a = skeleton[i][0];
       let b = skeleton[i][1];
@@ -100,6 +117,12 @@ function draw() {
       ellipse(x, y, 16, 16);
     }
   }
+  pop();
+  fill(255, 0, 255);
+  noStroke();
+  textSize(256);
+  textAlign(CENTER, CENTER);
+  text(poseLabel, width / 2, height / 2);
 }
 
 function modelLoaded() {
@@ -113,16 +136,8 @@ function gotPoses(poses) {
     skeleton = poses[0].skeleton;
 
     if (state == "collecting") {
-      let inputs = [];
-      for (let i = 0; i < pose.keypoints.length; i++) {
-        let x = pose.keypoints[i].position.x;
-        let y = pose.keypoints[i].position.y;
-        inputs.push(x);
-        inputs.push(y);
-      }
       let target = [targetLabel];
       brain.addData(inputs, target);
     }
-
   }
 }

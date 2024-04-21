@@ -1,10 +1,16 @@
 /**
+ * 
+ * THIS NEEDS TO BE CLEANED UP, NOT UP TO DATE.
+ * 
+ * 
+ * 
+ * 
  * Daniel Gonzalez
  *
  * poseML:
  * using ml5's pose function, the user will do certain poses
  * to control a spaceship in the screen. first ill play with pose thing to see what can be done.
- *
+ *.
  * 
 --HUGE THANKS TO CODINGTRAIN!!!--
 https://www.youtube.com/watch?v=FYgYyq-xqAw
@@ -24,10 +30,11 @@ add randomizer for falling metors, and collision detector
 the above 2 todos would be better made in a separate sketch, and then merge later on? idek
 
 
-1: train model on 3 poses:
-  1: salute (used to start the game)
-  2: steer left (t pose, lean left)
-  3: steer right (t pose, lean right)
+1: train model on 4 poses:
+  1: salute (used to start the game) (A)
+  2: steer left (t pose, lean left) (L)
+  3: steer right (t pose, lean right) (R)
+  4: rest pose (arms down) (E)
 
 
 
@@ -49,7 +56,7 @@ let pose;
 let skeleton;
 
 let brain;
-let poseLabel = "Y";
+let poseLabel = "E";
 
 let state = "waiting";
 let targetLabel;
@@ -76,11 +83,14 @@ class Ship {
   }
 
   move() {
-    // Update the ship's position based on key input
-    if (keyIsDown(LEFT_ARROW)|| poseLabel === 'L') {
+    // Update the ship's position based on key input OR pose
+    if (keyIsDown(LEFT_ARROW) || poseLabel === "L") {
+      //i could probably remove the left and right arrow things. but its useful for debugging.
       this.x -= this.speed; // Move left
-    } else if (keyIsDown(RIGHT_ARROW)|| poseLabel === 'R') {
+    } else if (keyIsDown(RIGHT_ARROW) || poseLabel === "R") {
       this.x += this.speed; // Move right
+    } else if (poseLabel === "E") {
+      this.x = this.x;
     }
 
     // Constrain ship's position to stay within the canvas
@@ -155,7 +165,7 @@ class Meteor {
     this.y = this.randPosY[this.meteorPos];
     this.initialVx = 0; //triggers the if else in line 64.
     this.initialVy = 0;
-    print("reset!"); //debug
+    //print("reset!"); //debug
     this.calculateDirection();
   }
 }
@@ -178,8 +188,8 @@ function setup() {
 
   let options = {
     //params
-    inputs: 34, //34 inputs, (17 mody parts, each having x and y)
-    outputs: 4, //4 outputs, aka YMCA (to be changed to flying parts)
+    inputs: 34, //34 inputs, (17 body parts, each having x and y)
+    outputs: 4, //4 outputs, aka left right rest salute (to be changed to flying parts) (huh.... ported over from shipdrivermerged... and it worked fine having 4 outputs when the ml was trained in 3 outputs.)
     task: "classification", //network will be in classifier mode
     debug: true, //to show graph when training, obsolete
   };
@@ -201,6 +211,15 @@ function draw() {
     // Title screen
 
     background(0, 34, 88); // Set the background color to dark blue (RGB values).
+
+    push(); //to prevent the letters showing from being flipped unlike the webcam
+    translate(video.width, 0); //this and line below simply flips the video
+    scale(-0.3, 0.3);
+    image(video, 0, 0, video.width, video.height);
+    skelly();
+    
+    pop(); //end inversion
+
     fill(255); // Set the fill color to white
     textAlign(CENTER, CENTER);
     textSize(60);
@@ -208,7 +227,11 @@ function draw() {
     textSize(29);
     text("salute with right arm to start.", width / 2, (3 * height) / 4);
     textSize(20);
-    text("in a t pose, tilt arms left and right to steer ship.", width / 2, (3.5 * height) / 4);
+    text(
+      "in a t pose, tilt arms left and right to steer ship. ADD IMGAGES!!!!! AHHHHHHHH",
+      width / 2,
+      (3.5 * height) / 4
+    );
 
     textSize(18);
     text("please read code for explanation!!", width / 2, (3.8 * height) / 4);
@@ -218,37 +241,30 @@ function draw() {
     textSize(20);
     text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
 
-    if (poseLabel === 'O') {
-      // If the mouse is clicked, transition to the simulation scene
-      scene = "simulation";
-      startTimer(); //doesnt work, trying to make timer start here
-      startMeteorSpawnInterval(); // Start spawning meteors
-    }
+    // if (poseLabel === "A") {
+    //   //0 is the salute option
+    //   // If the mouse is clicked, transition to the simulation scene
+    //   scene = "simulation";
+    //   startTimer(); //doesnt work, trying to make timer start here
+    //   startMeteorSpawnInterval(); // Start spawning meteors
+    // }
+
+    fill(255, 0, 255);
+    noStroke();
+    textSize(256);
+    textAlign(width / 4, height / 4);
+    text(poseLabel, width / 2, height / 2); //shows letter depending on body shape
+ 
+ 
   } else if (scene === "simulation") {
-    //now that i think of it, maybe the webcam can be in a tiny corner. add to TODO
+    //now that i think of it, maybe the webcam can be in a tiny corner. add to TODO (welp....... that time is now lol)
+    background(bg);
+
     push(); //to prevent the letters showing from being flipped unlike the webcam
     translate(video.width, 0); //this and line below simply flips the video
-    scale(-1, 1);
+    scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-
-    if (pose) {
-      for (let i = 0; i < skeleton.length; i++) {
-        //to show skelly
-        let a = skeleton[i][0];
-        let b = skeleton[i][1];
-        strokeWeight(2);
-        stroke(255);
-        line(a.position.x, a.position.y, b.position.x, b.position.y);
-      }
-
-      for (let i = 0; i < pose.keypoints.length; i++) {
-        //to show joints between skelly
-        let x = pose.keypoints[i].position.x;
-        let y = pose.keypoints[i].position.y;
-        fill(0, 255, 0);
-        ellipse(x, y, 16, 16);
-      }
-    }
+    skelly();
     pop(); //end inversion
 
     // fill(255, 0, 255);
@@ -257,19 +273,19 @@ function draw() {
     // textAlign(width/4, height/4);
     // text(poseLabel, width / 2, height / 2); //shows letter depending on body shape
 
-    mouseX = ship.x;
-    mouseY = ship.y;
+    mouseX = ship.x; //pretty much the meteors rely on mousex and mousey to track location of the ship this is a duct tape solution but honestly it works really fucking well LOLLLLL
+    mouseY = ship.y; //lmao... if it works it works eh?
 
     //main game
-    print(timer);
-    print(frequency);
-    print(meteor.speed);
+    // print(timer);
+    // print(frequency);
+    // print(meteor.speed);
     //background(bg); // Set the background color to dark blue (RGB values).
 
-    textSize(16);
+    textSize(30);
     fill(255);
-    textAlign(RIGHT, TOP);
-    text("Time: " + timer, width - 100, 10); //align text to top right
+    textAlign(LEFT, TOP);
+    text("Time: " + timer, width - 610, 30); //align text to top right
 
     for (let i = meteors.length - 1; i >= 0; i--) {
       //for every meteor in the array
@@ -305,18 +321,26 @@ function draw() {
     ship.display(); // Display the ship
   } else if (scene === "end") {
     background(bg); // Set the background color to dark blue (RGB values).
+
+    push(); //to prevent the letters showing from being flipped unlike the webcam
+    translate(video.width, 0); //this and line below simply flips the video
+    scale(-0.3, 0.3);
+    image(video, 0, 0, video.width, video.height);
+    skelly();
+    pop(); //end inversion
+
     fill(255); // Set the fill color to white
     textAlign(CENTER, CENTER);
     textSize(48);
     text("You Died!", width / 2, height / 2);
 
     textSize(24);
-    text("Time: " + timer + "s", width / 2, (3 * height) / 4); // Display the elapsed time
+    text("Time survived: " + timer + "s", width / 2, (3 * height) / 4); // Display the elapsed time
 
     textSize(24);
     text("salute again to restart.", width / 2, (2.5 * height) / 4); // Restart button
 
-    if (poseLabel === 'O') {
+    if (poseLabel === "O") {
       // If the mouse is clicked, transition to the simulation scene and restart the simulation
       scene = "simulation";
       startMeteorSpawnInterval(); // Start spawning meteors
@@ -336,7 +360,7 @@ function gotResult(error, results) {
   if (results[0].confidence > 0.75) {
     //decreases erratic fluctuations
     poseLabel = results[0].label.toUpperCase();
-    if (poseLabel === 'L' || poseLabel === 'R') {
+    if (poseLabel === "L" || poseLabel === "R") {
       ship.move();
     }
   }
@@ -389,7 +413,7 @@ function spawnNewMeteor() {
 
 function startMeteorSpawnInterval() {
   //spawns meteors
-  meteorSpawnInterval = setInterval(spawnNewMeteor, 250); // Start spawning meteors every 250ms
+  meteorSpawnInterval = setInterval(spawnNewMeteor, 500); // Start spawning meteors every 250ms
 }
 
 function startTimer() {
@@ -406,4 +430,23 @@ function startTimer() {
 function stopTimer() {
   //stops the timer
   clearInterval(timerInterval);
+}
+
+function skelly(){
+  if (pose) {  
+    for (let i = 0; i < skeleton.length; i++) {
+      let a = skeleton[i][0];
+      let b = skeleton[i][1];
+      strokeWeight(2);
+      stroke(255);
+      line(a.position.x, a.position.y, b.position.x, b.position.y);
+    }
+
+    for (let i = 0; i < pose.keypoints.length; i++) {
+      let x = pose.keypoints[i].position.x;
+      let y = pose.keypoints[i].position.y;
+      fill(0, 255, 0);
+      ellipse(x, y, 16, 16);
+    }
+  }
 }
