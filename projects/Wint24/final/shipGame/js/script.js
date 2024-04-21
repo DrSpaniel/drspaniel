@@ -89,8 +89,6 @@ class Ship {
       this.x -= this.speed; // Move left
     } else if (keyIsDown(RIGHT_ARROW) || poseLabel === "R") {
       this.x += this.speed; // Move right
-    } else if (poseLabel === "E") {
-      this.x = this.x;
     }
 
     // Constrain ship's position to stay within the canvas
@@ -216,8 +214,10 @@ function draw() {
     translate(video.width, 0); //this and line below simply flips the video
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-    skelly();
-    
+
+
+    skelly(); //debug
+
     pop(); //end inversion
 
     fill(255); // Set the fill color to white
@@ -241,21 +241,16 @@ function draw() {
     textSize(20);
     text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
 
-    // if (poseLabel === "A") {
-    //   //0 is the salute option
-    //   // If the mouse is clicked, transition to the simulation scene
-    //   scene = "simulation";
-    //   startTimer(); //doesnt work, trying to make timer start here
-    //   startMeteorSpawnInterval(); // Start spawning meteors
-    // }
 
-    fill(255, 0, 255);
-    noStroke();
-    textSize(256);
-    textAlign(width / 4, height / 4);
-    text(poseLabel, width / 2, height / 2); //shows letter depending on body shape
- 
- 
+    letterDisp();   //debug
+
+    if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
+      //A is the salute option
+      // If the mouse is clicked, transition to the simulation scene
+      scene = "simulation";
+      startTimer(); //doesnt work, trying to make timer start here
+      startMeteorSpawnInterval(); // Start spawning meteors
+    }
   } else if (scene === "simulation") {
     //now that i think of it, maybe the webcam can be in a tiny corner. add to TODO (welp....... that time is now lol)
     background(bg);
@@ -264,7 +259,7 @@ function draw() {
     translate(video.width, 0); //this and line below simply flips the video
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-    skelly();
+    skelly();   //debug
     pop(); //end inversion
 
     // fill(255, 0, 255);
@@ -277,9 +272,7 @@ function draw() {
     mouseY = ship.y; //lmao... if it works it works eh?
 
     //main game
-    // print(timer);
-    // print(frequency);
-    // print(meteor.speed);
+    // print(timer);poseLabel
     //background(bg); // Set the background color to dark blue (RGB values).
 
     textSize(30);
@@ -319,6 +312,8 @@ function draw() {
 
     ship.move(); // Move the ship based on key input
     ship.display(); // Display the ship
+
+    letterDisp();   //debug
   } else if (scene === "end") {
     background(bg); // Set the background color to dark blue (RGB values).
 
@@ -326,7 +321,7 @@ function draw() {
     translate(video.width, 0); //this and line below simply flips the video
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-    skelly();
+    skelly();   //debug
     pop(); //end inversion
 
     fill(255); // Set the fill color to white
@@ -340,18 +335,18 @@ function draw() {
     textSize(24);
     text("salute again to restart.", width / 2, (2.5 * height) / 4); // Restart button
 
-    if (poseLabel === "O") {
+    //if (poseLabel === "A") {  //im pretty sure this should make sure that the person is saluting for two straight seconds before it actually restarts
+    // setTimeout(function () {
+    if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
       // If the mouse is clicked, transition to the simulation scene and restart the simulation
       scene = "simulation";
       startMeteorSpawnInterval(); // Start spawning meteors
       meteors = [];
       startTimer();
     }
-  } else if (scene === "board") {
-    //WIP, this will be a leaderboard to submit results. title page will have a list
-
-    background(0); // Set the background color to black
+    // }, 3000);
   }
+  //}
 }
 
 //--NEURAL NETWORK THINGS--
@@ -413,7 +408,7 @@ function spawnNewMeteor() {
 
 function startMeteorSpawnInterval() {
   //spawns meteors
-  meteorSpawnInterval = setInterval(spawnNewMeteor, 500); // Start spawning meteors every 250ms
+  meteorSpawnInterval = setInterval(spawnNewMeteor, 1000); // Start spawning meteors every 250ms
 }
 
 function startTimer() {
@@ -432,8 +427,8 @@ function stopTimer() {
   clearInterval(timerInterval);
 }
 
-function skelly(){
-  if (pose) {  
+function skelly() {
+  if (pose) {
     for (let i = 0; i < skeleton.length; i++) {
       let a = skeleton[i][0];
       let b = skeleton[i][1];
@@ -449,4 +444,12 @@ function skelly(){
       ellipse(x, y, 16, 16);
     }
   }
+}
+
+function letterDisp() {
+  fill(255, 0, 255);
+  noStroke();
+  textSize(256);
+  textAlign(width / 4, height / 4);
+  text(poseLabel, width / 2, height / 2); //shows letter depending on body shape
 }

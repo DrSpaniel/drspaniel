@@ -31,7 +31,7 @@ function keyPressed() {
       setTimeout(function () {
         console.log("not collecting!");
         state = "waiting";
-      }, 10000);
+      }, 20000);    //collect 20 seconds worth of data to make it more accurate? idek.
     }, 5000);
   }
 }
@@ -59,7 +59,7 @@ function dataReady(){
   brain.normalizeData();
   brain.train(
     {
-      epochs: 100
+      epochs: 200   //200 cause i really want this to be super accurate.
     }, finished
   );
 }
