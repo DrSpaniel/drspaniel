@@ -77,6 +77,7 @@ let initialSpeed;
 let initialFrequency;
 let bg;
 let intro;  //intro bg
+let end; //end screen
 let lastShipX; //to save ships last spot when explodes to put explosion image
 let lastShipY;
 
@@ -194,6 +195,7 @@ function setup() {
   meteor = new Meteor(); // Create the initial meteor object
   bg = loadImage("assets/images/bgs/space.jpg");
   intro = loadImage("assets/images/bgs/intro.jpg")
+  end = loadImage("assets/images/bgs/end.jpg")
   initialSpeed = 1.5; // Reset the initial speed
   initialFrequency = 0; // Reset the initial frequency
   ship = new Ship(); // Create the ship object
@@ -296,7 +298,7 @@ function draw() {
     textSize(30);
     fill(255);
     textAlign(LEFT, TOP);
-    text("Time: " + timer, width - 610, 30); //align text to top right
+    text("Time: " + timer, width/6, 30); //align text to top right
 
     for (let i = meteors.length - 1; i >= 0; i--) {
       //for every meteor in the array
@@ -337,7 +339,7 @@ function draw() {
 
     //letterDisp(); //debug
   } else if (scene === "end") {
-    background(bg); // Set the background color to dark blue (RGB values).
+    background(end); // Set the background color to dark blue (RGB values).
 
     push(); //to prevent the letters showing from being flipped unlike the webcam
     translate(video.width, 0); //this and line below simply flips the video
