@@ -49,17 +49,23 @@ the above 2 todos would be better made in a separate sketch, and then merge late
  */
 "use strict";
 
+let kaboom;
+let kaboomCounter = 0; //this will make sure that the gif plays only once.
+
+//--SOUNDS--
+let start;
+let explosion;
+let spawnSound;
+
 //--NEURAL NETWORK THINGS--
 let video;
 let poseNet;
 let pose;
 let skeleton;
-
 let brain;
-let poseLabel = "E";
-
 let state = "waiting";
 let targetLabel;
+let poseLabel = "E";
 
 //--SHIP GAME THINGS--
 let scene = "title"; // Initial scene is set to "title"
@@ -70,8 +76,11 @@ let timerInterval;
 let initialSpeed;
 let initialFrequency;
 let bg;
+let lastShipX; //to save ships last spot when explodes to put explosion image
+let lastShipY;
 
-let ship; // Declare ship variable
+//--CLASS DECLARATIONS--
+let ship;
 let meteor;
 
 class Ship {
@@ -163,7 +172,7 @@ class Meteor {
     this.y = this.randPosY[this.meteorPos];
     this.initialVx = 0; //triggers the if else in line 64.
     this.initialVy = 0;
-    //print("reset!"); //debug
+    print("reset!"); //debug
     this.calculateDirection();
   }
 }
@@ -172,6 +181,14 @@ let meteors = []; // Array to hold meteor objects
 
 function setup() {
   createCanvas(640, 480);
+
+  //*****SOUNDS*****//
+  start = loadSound("assets/sounds/start.wav");
+  explosion = loadSound("assets/sounds/explosion.wav");
+  spawnSound = loadSound("assets/sounds/meteor.wav");
+
+  kaboom = loadImage("./assets/images/kaboom.gif");
+
   frameRate(60); //for preformance
   meteor = new Meteor(); // Create the initial meteor object
   bg = loadImage("assets/images/space.jpg");
@@ -215,7 +232,6 @@ function draw() {
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
 
-
     skelly(); //debug
 
     pop(); //end inversion
@@ -241,12 +257,12 @@ function draw() {
     textSize(20);
     text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
 
-
-    letterDisp();   //debug
+    letterDisp(); //debug
 
     if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
       //A is the salute option
       // If the mouse is clicked, transition to the simulation scene
+      start.play();
       scene = "simulation";
       startTimer(); //doesnt work, trying to make timer start here
       startMeteorSpawnInterval(); // Start spawning meteors
@@ -259,7 +275,7 @@ function draw() {
     translate(video.width, 0); //this and line below simply flips the video
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-    skelly();   //debug
+    skelly(); //debug
     pop(); //end inversion
 
     // fill(255, 0, 255);
@@ -303,7 +319,11 @@ function draw() {
         //when ship touches any meteor
         //55 to account of radius of both meteor and ship. probably janky. i could probably make it when both images overlap but argh
         // If the mouse touches a meteor, transition to the "end" scene
+        lastShipX = ship.x;
+        lastShipY = ship.y;
+        explosion.play();
         scene = "end";
+
         clearInterval(meteorSpawnInterval); // Stop spawning meteors
 
         stopTimer();
@@ -313,7 +333,7 @@ function draw() {
     ship.move(); // Move the ship based on key input
     ship.display(); // Display the ship
 
-    letterDisp();   //debug
+    letterDisp(); //debug
   } else if (scene === "end") {
     background(bg); // Set the background color to dark blue (RGB values).
 
@@ -321,7 +341,7 @@ function draw() {
     translate(video.width, 0); //this and line below simply flips the video
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-    skelly();   //debug
+    skelly(); //debug
     pop(); //end inversion
 
     fill(255); // Set the fill color to white
@@ -335,18 +355,28 @@ function draw() {
     textSize(24);
     text("salute again to restart.", width / 2, (2.5 * height) / 4); // Restart button
 
-    //if (poseLabel === "A") {  //im pretty sure this should make sure that the person is saluting for two straight seconds before it actually restarts
+    if (kaboomCounter == 0) {
+      image(kaboom, lastShipX - 100, lastShipY - 150);
+
+      setTimeout(function () {
+        kaboomCounter++; //trigger this only after 2.5 seconds have passed
+      }, 1600);
+    }
+
+    // if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {    //this doesnt work..... need to find another way to hold the salute for 3s before changing scenes.
     // setTimeout(function () {
     if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
       // If the mouse is clicked, transition to the simulation scene and restart the simulation
+      start.play();
       scene = "simulation";
       startMeteorSpawnInterval(); // Start spawning meteors
       meteors = [];
       startTimer();
+      kaboomCounter = 0;
     }
     // }, 3000);
+    //}
   }
-  //}
 }
 
 //--NEURAL NETWORK THINGS--
@@ -365,7 +395,7 @@ function gotResult(error, results) {
 
 function brainLoaded() {
   //this network handles pose classification, salute, tilt, etc
-  console.log("pose classification ready!!!!");
+  console.log("pose classification readyletterDisp!!");
   classifyPose(); //explained below
 }
 
@@ -404,11 +434,12 @@ function gotPoses(poses) {
 
 function spawnNewMeteor() {
   meteors.push(new Meteor()); // Create a new meteor and add it to the array
+  spawnSound.play();
 }
 
 function startMeteorSpawnInterval() {
   //spawns meteors
-  meteorSpawnInterval = setInterval(spawnNewMeteor, 1000); // Start spawning meteors every 250ms
+  meteorSpawnInterval = setInterval(spawnNewMeteor, 500); // Start spawning meteors every 250ms
 }
 
 function startTimer() {
