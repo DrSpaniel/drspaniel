@@ -76,6 +76,7 @@ let timerInterval;
 let initialSpeed;
 let initialFrequency;
 let bg;
+let intro;  //intro bg
 let lastShipX; //to save ships last spot when explodes to put explosion image
 let lastShipY;
 
@@ -180,7 +181,7 @@ class Meteor {
 let meteors = []; // Array to hold meteor objects
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(windowHeight * 1.33333, windowHeight);
 
   //*****SOUNDS*****//
   start = loadSound("assets/sounds/start.wav");
@@ -191,7 +192,8 @@ function setup() {
 
   frameRate(60); //for preformance
   meteor = new Meteor(); // Create the initial meteor object
-  bg = loadImage("assets/images/space.jpg");
+  bg = loadImage("assets/images/bgs/space.jpg");
+  intro = loadImage("assets/images/bgs/intro.jpg")
   initialSpeed = 1.5; // Reset the initial speed
   initialFrequency = 0; // Reset the initial frequency
   ship = new Ship(); // Create the ship object
@@ -225,39 +227,39 @@ function draw() {
   if (scene === "title") {
     // Title screen
 
-    background(0, 34, 88); // Set the background color to dark blue (RGB values).
+    background(intro); // Set the background color to dark blue (RGB values).
 
     push(); //to prevent the letters showing from being flipped unlike the webcam
     translate(video.width, 0); //this and line below simply flips the video
-    scale(-0.3, 0.3);
-    image(video, 0, 0, video.width, video.height);
+    scale(-0.5, 0.5);
+    image(video, 0, windowHeight/2, video.width, video.height);
 
-    skelly(); //debug
+    //skelly(); //debug
 
     pop(); //end inversion
 
-    fill(255); // Set the fill color to white
-    textAlign(CENTER, CENTER);
-    textSize(60);
-    text("Space!", width / 2, height / 4); //title, make it better
-    textSize(29);
-    text("salute with right arm to start.", width / 2, (3 * height) / 4);
-    textSize(20);
-    text(
-      "in a t pose, tilt arms left and right to steer ship. ADD IMGAGES!!!!! AHHHHHHHH",
-      width / 2,
-      (3.5 * height) / 4
-    );
+    // fill(255); // Set the fill color to white
+    // textAlign(CENTER, CENTER);
+    // textSize(60);
+    // text("Space!", width / 2, height / 4); //title, make it better
+    // textSize(29);
+    // text("salute with right arm to start.", width / 2, (3 * height) / 4);
+    // textSize(20);
+    // text(
+    //   "in a t pose, tilt arms left and right to steer ship. ADD IMGAGES!!!!! AHHHHHHHH",
+    //   width / 2,
+    //   (3.5 * height) / 4
+    // );
 
-    textSize(18);
-    text("please read code for explanation!!", width / 2, (3.8 * height) / 4);
+    // textSize(18);
+    // text("please read code for explanation!!", width / 2, (3.8 * height) / 4);
 
-    textSize(8);
-    text("drspaniel.com", width / 8, (7 * height) / 8); //shameless plug
-    textSize(20);
-    text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
+    // textSize(8);
+    // text("drspaniel.com", width / 8, (7 * height) / 8); //shameless plug
+    // textSize(20);
+    // text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
 
-    letterDisp(); //debug
+    //letterDisp(); //debug
 
     if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
       //A is the salute option
@@ -275,7 +277,7 @@ function draw() {
     translate(video.width, 0); //this and line below simply flips the video
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-    skelly(); //debug
+    //skelly(); //debug
     pop(); //end inversion
 
     // fill(255, 0, 255);
@@ -333,7 +335,7 @@ function draw() {
     ship.move(); // Move the ship based on key input
     ship.display(); // Display the ship
 
-    letterDisp(); //debug
+    //letterDisp(); //debug
   } else if (scene === "end") {
     background(bg); // Set the background color to dark blue (RGB values).
 
@@ -341,7 +343,7 @@ function draw() {
     translate(video.width, 0); //this and line below simply flips the video
     scale(-0.3, 0.3);
     image(video, 0, 0, video.width, video.height);
-    skelly(); //debug
+    //skelly(); //debug
     pop(); //end inversion
 
     fill(255); // Set the fill color to white
