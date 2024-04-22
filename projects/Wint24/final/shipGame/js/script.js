@@ -66,6 +66,7 @@ let brain;
 let state = "waiting";
 let targetLabel;
 let poseLabel = "E";
+let poseNetCheck = false; //this is so that the game does not start unless the posenet is loaded properly.
 
 //--SHIP GAME THINGS--
 let scene = "title"; // Initial scene is set to "title"
@@ -76,7 +77,7 @@ let timerInterval;
 let initialSpeed;
 let initialFrequency;
 let bg;
-let intro;  //intro bg
+let intro; //intro bg
 let end; //end screen
 let lastShipX; //to save ships last spot when explodes to put explosion image
 let lastShipY;
@@ -194,8 +195,8 @@ function setup() {
   frameRate(60); //for preformance
   meteor = new Meteor(); // Create the initial meteor object
   bg = loadImage("assets/images/bgs/space.jpg");
-  intro = loadImage("assets/images/bgs/intro.jpg")
-  end = loadImage("assets/images/bgs/end.jpg")
+  intro = loadImage("assets/images/bgs/intro.jpg");
+  end = loadImage("assets/images/bgs/end.jpg");
   initialSpeed = 1.5; // Reset the initial speed
   initialFrequency = 0; // Reset the initial frequency
   ship = new Ship(); // Create the ship object
@@ -226,160 +227,169 @@ function setup() {
 }
 
 function draw() {
-  if (scene === "title") {
-    // Title screen
+  if (poseNetCheck == true) {
+    if (scene === "title") {
+      // Title screen
 
-    background(intro); // Set the background color to dark blue (RGB values).
+      background(intro); // Set the background color to dark blue (RGB values).
 
-    push(); //to prevent the letters showing from being flipped unlike the webcam
-    translate(video.width, 0); //this and line below simply flips the video
-    scale(-0.5, 0.5);
-    image(video, 0, windowHeight/2, video.width, video.height);
+      push(); //to prevent the letters showing from being flipped unlike the webcam
+      translate(video.width, 0); //this and line below simply flips the video
+      scale(-0.5, 0.5);
+      image(video, 0, windowHeight / 2, video.width, video.height);
 
-    //skelly(); //debug
+      //skelly(); //debug
 
-    pop(); //end inversion
+      pop(); //end inversion
 
-    // fill(255); // Set the fill color to white
-    // textAlign(CENTER, CENTER);
-    // textSize(60);
-    // text("Space!", width / 2, height / 4); //title, make it better
-    // textSize(29);
-    // text("salute with right arm to start.", width / 2, (3 * height) / 4);
-    // textSize(20);
-    // text(
-    //   "in a t pose, tilt arms left and right to steer ship. ADD IMGAGES!!!!! AHHHHHHHH",
-    //   width / 2,
-    //   (3.5 * height) / 4
-    // );
+      // fill(255); // Set the fill color to white
+      // textAlign(CENTER, CENTER);
+      // textSize(60);
+      // text("Space!", width / 2, height / 4); //title, make it better
+      // textSize(29);
+      // text("salute with right arm to start.", width / 2, (3 * height) / 4);
+      // textSize(20);
+      // text(
+      //   "in a t pose, tilt arms left and right to steer ship. ADD IMGAGES!!!!! AHHHHHHHH",
+      //   width / 2,
+      //   (3.5 * height) / 4
+      // );
 
-    // textSize(18);
-    // text("please read code for explanation!!", width / 2, (3.8 * height) / 4);
+      // textSize(18);
+      // text("please read code for explanation!!", width / 2, (3.8 * height) / 4);
 
-    // textSize(8);
-    // text("drspaniel.com", width / 8, (7 * height) / 8); //shameless plug
-    // textSize(20);
-    // text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
+      // textSize(8);
+      // text("drspaniel.com", width / 8, (7 * height) / 8); //shameless plug
+      // textSize(20);
+      // text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
 
-    //letterDisp(); //debug
+      //letterDisp(); //debug
 
-    if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
-      //A is the salute option
-      // If the mouse is clicked, transition to the simulation scene
-      start.play();
-      scene = "simulation";
-      startTimer(); //doesnt work, trying to make timer start here
-      startMeteorSpawnInterval(); // Start spawning meteors
-    }
-  } else if (scene === "simulation") {
-    //now that i think of it, maybe the webcam can be in a tiny corner. add to TODO (welp....... that time is now lol)
-    background(bg);
-
-    push(); //to prevent the letters showing from being flipped unlike the webcam
-    translate(video.width, 0); //this and line below simply flips the video
-    scale(-0.3, 0.3);
-    image(video, 0, 0, video.width, video.height);
-    //skelly(); //debug
-    pop(); //end inversion
-
-    // fill(255, 0, 255);
-    // noStroke();
-    // textSize(256);
-    // textAlign(width/4, height/4);
-    // text(poseLabel, width / 2, height / 2); //shows letter depending on body shape
-
-    mouseX = ship.x; //pretty much the meteors rely on mousex and mousey to track location of the ship this is a duct tape solution but honestly it works really fucking well LOLLLLL
-    mouseY = ship.y; //lmao... if it works it works eh?
-
-    //main game
-    // print(timer);poseLabel
-    //background(bg); // Set the background color to dark blue (RGB values).
-
-    textSize(30);
-    fill(255);
-    textAlign(LEFT, TOP);
-    text("Time: " + timer, width/6, 30); //align text to top right
-
-    for (let i = meteors.length - 1; i >= 0; i--) {
-      //for every meteor in the array
-      const meteor = meteors[i]; // Get the current meteor object from the array.
-
-      image(meteor.img, meteor.x - 32, meteor.y - 32); // Display the meteor's image at its current position with an offset to center it.
-
-      meteor.calculateDirection(); // Calculate the direction of the meteor's movement based on the mouse position.
-
-      meteor.move(); // Update the meteor's position based on its velocity.
-
-      if (
-        //meteor touching border
-        meteor.y > height ||
-        meteor.y < 0 ||
-        meteor.x > width ||
-        meteor.x < 0
-      ) {
-        meteors.splice(i, 1); // Remove meteors that go off-screen from the array.
+      if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
+        //A is the salute option
+        // If the mouse is clicked, transition to the simulation scene
+        start.play();
+        scene = "simulation";
+        startTimer(); //doesnt work, trying to make timer start here
+        startMeteorSpawnInterval(); // Start spawning meteors
       }
-      if (dist(meteor.x, meteor.y, mouseX, mouseY) < 55) {
-        //when ship touches any meteor
-        //55 to account of radius of both meteor and ship. probably janky. i could probably make it when both images overlap but argh
-        // If the mouse touches a meteor, transition to the "end" scene
-        lastShipX = ship.x;
-        lastShipY = ship.y;
-        explosion.play();
-        scene = "end";
+    } else if (scene === "simulation") {
+      //now that i think of it, maybe the webcam can be in a tiny corner. add to TODO (welp....... that time is now lol)
+      background(bg);
 
-        clearInterval(meteorSpawnInterval); // Stop spawning meteors
+      push(); //to prevent the letters showing from being flipped unlike the webcam
+      translate(video.width, 0); //this and line below simply flips the video
+      scale(-0.3, 0.3);
+      image(video, 0, 0, video.width, video.height);
+      //skelly(); //debug
+      pop(); //end inversion
 
-        stopTimer();
+      // fill(255, 0, 255);
+      // noStroke();
+      // textSize(256);
+      // textAlign(width/4, height/4);
+      // text(poseLabel, width / 2, height / 2); //shows letter depending on body shape
+
+      mouseX = ship.x; //pretty much the meteors rely on mousex and mousey to track location of the ship this is a duct tape solution but honestly it works really fucking well LOLLLLL
+      mouseY = ship.y; //lmao... if it works it works eh?
+
+      //main game
+      // print(timer);poseLabel
+      //background(bg); // Set the background color to dark blue (RGB values).
+
+      textSize(30);
+      fill(255);
+      textAlign(LEFT, TOP);
+      text("Time: " + timer, width / 6, 30); //align text to top right
+
+      for (let i = meteors.length - 1; i >= 0; i--) {
+        //for every meteor in the array
+        const meteor = meteors[i]; // Get the current meteor object from the array.
+
+        image(meteor.img, meteor.x - 32, meteor.y - 32); // Display the meteor's image at its current position with an offset to center it.
+
+        meteor.calculateDirection(); // Calculate the direction of the meteor's movement based on the mouse position.
+
+        meteor.move(); // Update the meteor's position based on its velocity.
+
+        if (
+          //meteor touching border
+          meteor.y > height ||
+          meteor.y < 0 ||
+          meteor.x > width ||
+          meteor.x < 0
+        ) {
+          meteors.splice(i, 1); // Remove meteors that go off-screen from the array.
+        }
+        if (dist(meteor.x, meteor.y, mouseX, mouseY) < 55) {
+          //when ship touches any meteor
+          //55 to account of radius of both meteor and ship. probably janky. i could probably make it when both images overlap but argh
+          // If the mouse touches a meteor, transition to the "end" scene
+          lastShipX = ship.x;
+          lastShipY = ship.y;
+          explosion.play();
+          scene = "end";
+
+          clearInterval(meteorSpawnInterval); // Stop spawning meteors
+
+          stopTimer();
+        }
       }
+
+      ship.move(); // Move the ship based on key input
+      ship.display(); // Display the ship
+
+      //letterDisp(); //debug
+    } else if (scene === "end") {
+      background(end); // Set the background color to dark blue (RGB values).
+
+      push(); //to prevent the letters showing from being flipped unlike the webcam
+      translate(video.width, 0); //this and line below simply flips the video
+      scale(-0.5, 0.5);
+      image(video, 0, windowHeight / 2, video.width, video.height);
+      //skelly(); //debug
+      pop(); //end inversion
+
+      // fill(255); // Set the fill color to white
+      // textAlign(CENTER, CENTER);
+      // textSize(48);
+      // text("You Died!", width / 2, height / 2);
+
+      textSize(24);
+      text("Time survived: " + timer + "s", width / 2.5, (2.5 * height) / 4); // Display the elapsed time
+
+      // textSize(24);
+      // text("salute again to restart.", width / 2, (2.5 * height) / 4); // Restart button
+
+      if (kaboomCounter == 0) {
+        image(kaboom, lastShipX - 100, lastShipY - 150);
+
+        setTimeout(function () {
+          kaboomCounter++; //trigger this only after 2.5 seconds have passed
+        }, 1600);
+      }
+
+      // if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {    //this doesnt work..... need to find another way to hold the salute for 3s before changing scenes.
+      // setTimeout(function () {
+      if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
+        // If the mouse is clicked, transition to the simulation scene and restart the simulation
+        start.play();
+        scene = "simulation";
+        startMeteorSpawnInterval(); // Start spawning meteors
+        meteors = [];
+        startTimer();
+        kaboomCounter = 0;
+      }
+      // }, 3000);
+      //}
     }
-
-    ship.move(); // Move the ship based on key input
-    ship.display(); // Display the ship
-
-    //letterDisp(); //debug
-  } else if (scene === "end") {
-    background(end); // Set the background color to dark blue (RGB values).
-
-    push(); //to prevent the letters showing from being flipped unlike the webcam
-    translate(video.width, 0); //this and line below simply flips the video
-    scale(-0.3, 0.3);
-    image(video, 0, 0, video.width, video.height);
-    //skelly(); //debug
-    pop(); //end inversion
-
-    fill(255); // Set the fill color to white
-    textAlign(CENTER, CENTER);
-    textSize(48);
-    text("You Died!", width / 2, height / 2);
-
-    textSize(24);
-    text("Time survived: " + timer + "s", width / 2, (3 * height) / 4); // Display the elapsed time
-
-    textSize(24);
-    text("salute again to restart.", width / 2, (2.5 * height) / 4); // Restart button
-
-    if (kaboomCounter == 0) {
-      image(kaboom, lastShipX - 100, lastShipY - 150);
-
-      setTimeout(function () {
-        kaboomCounter++; //trigger this only after 2.5 seconds have passed
-      }, 1600);
-    }
-
-    // if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {    //this doesnt work..... need to find another way to hold the salute for 3s before changing scenes.
-    // setTimeout(function () {
-    if (keyIsDown(DOWN_ARROW) || poseLabel === "A") {
-      // If the mouse is clicked, transition to the simulation scene and restart the simulation
-      start.play();
-      scene = "simulation";
-      startMeteorSpawnInterval(); // Start spawning meteors
-      meteors = [];
-      startTimer();
-      kaboomCounter = 0;
-    }
-    // }, 3000);
-    //}
+  } else {
+    background(0);
+    fill(255, 255, 255);
+    noStroke();
+    textSize(90);
+    textAlign(width / 4, height / 4);
+    text("loading....", width / 2, height / 2); 
   }
 }
 
@@ -424,6 +434,7 @@ function classifyPose() {
 function modelLoaded() {
   //handles pose model, to detect posed
   console.log("poseNet ready!");
+  poseNetCheck = true;
 }
 
 function gotPoses(poses) {
