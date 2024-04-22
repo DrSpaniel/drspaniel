@@ -78,6 +78,7 @@ let initialSpeed;
 let initialFrequency;
 let bg;
 let intro; //intro bg
+let load;
 let end; //end screen
 let lastShipX; //to save ships last spot when explodes to put explosion image
 let lastShipY;
@@ -197,6 +198,7 @@ function setup() {
   bg = loadImage("assets/images/bgs/space.jpg");
   intro = loadImage("assets/images/bgs/intro.jpg");
   end = loadImage("assets/images/bgs/end.jpg");
+  load = loadImage("assets/images/bgs/load.jpg");
   initialSpeed = 1.5; // Reset the initial speed
   initialFrequency = 0; // Reset the initial frequency
   ship = new Ship(); // Create the ship object
@@ -384,12 +386,7 @@ function draw() {
       //}
     }
   } else {
-    background(0);
-    fill(255, 255, 255);
-    noStroke();
-    textSize(90);
-    textAlign(width / 4, height / 4);
-    text("loading....", width / 2, height / 2); 
+    background(load);
   }
 }
 
