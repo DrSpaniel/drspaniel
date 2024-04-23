@@ -1,52 +1,38 @@
-/**
- * 
- * THIS NEEDS TO BE CLEANED UP, NOT UP TO DATE.
- * 
- * 
- * 
- * 
- * Daniel Gonzalez
- *
- * poseML:
- * using ml5's pose function, the user will do certain poses
- * to control a spaceship in the screen. first ill play with pose thing to see what can be done.
- *.
- * 
---HUGE THANKS TO CODINGTRAIN!!!--
-https://www.youtube.com/watch?v=FYgYyq-xqAw
+/* 
+Daniel Gonzalez
+CART 263
+final project!
+COLLISION COURSE
 
-^was followed step by step, NOT copypasted. 
+using posenet (ml5.js), a ship is controlled by your torso.
 
-neural networks are cool!
+there are 2 other files in this repository which arent used for this game. 
+these were used to train and practice that the posenet model recognized my gestures properly.
+to be honest the salute is still a bit jank. after a bunch of hours it still wasnt consistent. sorry.
 
-
-TODO:
-replace YMCA model with plane model
-change outputs from 4 to 2, but figure that out later
-position camera and skelly to a tiny corner, so that the ship is the main thing
-add some plane icon that will move depending on pose recognizer
-add randomizer for falling metors, and collision detector
-
-the above 2 todos would be better made in a separate sketch, and then merge later on? idek
-
-
-1: train model on 4 poses:
-  1: salute (used to start the game) (A)
+trained model on 4 poses:
+  1: salute (used to start the game) (A)    (this is needed so the model doesnt instantly restart when the game ends)
   2: steer left (t pose, lean left) (L)
   3: steer right (t pose, lean right) (R)
   4: rest pose (arms down) (E)
 
+  known bugs:
+  meteors do not spawn consistently
+  gameplay texures are hideous and inconsistent compared to the intro screen. could be done better
+  
 
 
+  could be added:
+  shooting powerup
+  shield powerup
+  tracking meteor, with arcing idek
+  salute jank
 
-  NOT WORKING:
-  ship not showing on website.
-  make steer gradual, depending on angle of arms
-  https://www.youtube.com/watch?v=fFzvwdkzr_c&t=0s
-  idek man this is a mess
-
-
- */
+   
+--HUGE THANKS TO CODINGTRAIN!!!--
+https://www.youtube.com/watch?v=FYgYyq-xqAw
+neural networks are cool!
+*/
 "use strict";
 
 let kaboom;
@@ -186,7 +172,7 @@ let meteors = []; // Array to hold meteor objects
 function setup() {
   createCanvas(windowHeight * 1.33333, windowHeight);
 
-  //*****SOUNDS*****//
+  //     SOUNDS     //
   start = loadSound("assets/sounds/start.wav");
   explosion = loadSound("assets/sounds/explosion.wav");
   spawnSound = loadSound("assets/sounds/meteor.wav");
@@ -249,21 +235,21 @@ function draw() {
       // textSize(60);
       // text("Space!", width / 2, height / 4); //title, make it better
       // textSize(29);
-      // text("salute with right arm to start.", width / 2, (3 * height) / 4);
+      // text("salute with right arm to start.", width / 2, (3   height) / 4);
       // textSize(20);
       // text(
       //   "in a t pose, tilt arms left and right to steer ship. ADD IMGAGES!!!!! AHHHHHHHH",
       //   width / 2,
-      //   (3.5 * height) / 4
+      //   (3.5   height) / 4
       // );
 
       // textSize(18);
-      // text("please read code for explanation!!", width / 2, (3.8 * height) / 4);
+      // text("please read code for explanation!!", width / 2, (3.8   height) / 4);
 
       // textSize(8);
-      // text("drspaniel.com", width / 8, (7 * height) / 8); //shameless plug
+      // text("drspaniel.com", width / 8, (7   height) / 8); //shameless plug
       // textSize(20);
-      // text("avoid the meteors!!!", width / 2, (2.5 * height) / 4);
+      // text("avoid the meteors!!!", width / 2, (2.5   height) / 4);
 
       //letterDisp(); //debug
 
@@ -361,7 +347,7 @@ function draw() {
       text("Time survived: " + timer + "s", width / 2.5, (2.5 * height) / 4); // Display the elapsed time
 
       // textSize(24);
-      // text("salute again to restart.", width / 2, (2.5 * height) / 4); // Restart button
+      // text("salute again to restart.", width / 2, (2.5   height) / 4); // Restart button
 
       if (kaboomCounter == 0) {
         image(kaboom, lastShipX - 100, lastShipY - 150);
