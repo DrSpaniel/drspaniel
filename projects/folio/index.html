@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Menu</h2>
+            </div>
+            <ul>
+                <li><a href="#" data-content="who-am-i">Who Am I</a></li>
+                <li>
+                    <a href="#" class="submenu-toggle">My Projects</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-content="hardware">Hardware</a></li>
+                        <li><a href="#" data-content="software">Software</a></li>
+                        <li><a href="#" data-content="animation">Animation</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="submenu-toggle">My Knowledge/Interests</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-content="education">Education</a></li>
+                        <li><a href="#" data-content="hobbies">Hobbies</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="content">
+            <div id="who-am-i" class="content-section">
+                <h1>Who Am I</h1>
+                <img src="your-photo.jpg" alt="Your Photo" class="profile-photo">
+                <p>Hello! I'm a student passionate about technology and creativity. Welcome to my portfolio!</p>
+            </div>
+            <div id="hardware" class="content-section" style="display:none;">
+                <h1>Hardware Projects</h1>
+                <p>Details about your hardware projects.</p>
+            </div>
+            <div id="software" class="content-section" style="display:none;">
+                <h1>Software Projects</h1>
+                <p>Details about your software projects.</p>
+            </div>
+            <div id="animation" class="content-section" style="display:none;">
+                <h1>Animation Projects</h1>
+                <p>Details about your animation projects.</p>
+            </div>
+            <div id="education" class="content-section" style="display:none;">
+                <h1>Education</h1>
+                <p>Details about your education background.</p>
+            </div>
+            <div id="hobbies" class="content-section" style="display:none;">
+                <h1>Hobbies</h1>
+                <p>Details about your hobbies.</p>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>
